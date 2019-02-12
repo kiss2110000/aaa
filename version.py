@@ -18,7 +18,7 @@ version = {
         # 进入详情的按钮
         "评论按钮": "com.tencent.mm:id/efe",
 
-        # 详情
+        # 详情里的文字和九宫格的父级节点
         "详情文字": "com.tencent.mm:id/kt",
         "九宫格": "com.tencent.mm:id/eiz",
 
@@ -90,4 +90,9 @@ version = {
         # "粘贴文字": "com.tencent.mm:id/cox",
         # "表情": "com.tencent.mm:id/cvs"
             }
+}
+
+bottons = {
+    'c176b27d-18:e2:9f:2e:dd:78-vivo_X7Plus': 1920,
+    'c176b27d-18:e2:9f:2e:dd:78-vivo_X23Plus': 2214,
 }
