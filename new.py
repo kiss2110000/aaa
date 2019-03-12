@@ -735,6 +735,76 @@ def shoucangOnly(d, elem, elem_type):
     return False
 
 
+def shoucangNoChange(d, elem, elem_type):
+    """6中类型：empty word photoList video photoWord videoWord photoWordList """
+    print(" -- 开始收藏....")
+    # 判断类型,选择保存
+    if elem_type == "word":
+        # 点击进入详情
+        clickElem(d, elem)
+        isDetailsMode(d)
+        word = d(resourceId=Element["详情文字"]).get_text(timeout=5)
+
+        d(text=u"评论").set_text(word, timeout=1)
+        d(text=u"发送").exists(timeout=1)
+        d(text=u"发送").click_exists(timeout=1)
+
+        d(resourceId=Element["详情文字"]).long_click(duration=0.6)
+        d(text="收藏").click(timeout=1)
+
+        jumpToBack(d)
+        isAlbumMode(d)
+        print(" -- 收藏成功....")
+        return False
+    elif elem_type == "photoList":
+        for child in elem.iter():
+            # 找到每个图片的按钮,点击进入阅读模式,并保存
+            if child.attrib["class"] == "android.view.View" and \
+                    (child.attrib["resource-id"] == Element["视频1部件"] or
+                     child.attrib["resource-id"] == Element["视频2部件"] or
+                     child.attrib["resource-id"] == Element["视频3部件"]):
+                # 点击打开图片
+                clickElem(d, child)
+                isReadingMode(d)
+                assert d(className="android.widget.ProgressBar").wait_gone(timeout=600), "下载失败，检查网络是否正常！"
+                d(description="更多").click(timeout=3)
+                d(text="收藏").click(timeout=3)
+                jumpToBack(d)
+                isAlbumMode(d)
+        print(" -- 收藏成功....")
+        return True
+    elif elem_type == "video":
+        # 找到视频按钮,点击进入阅读模式
+        albumJumpReading(d, elem)
+        assert d(className="android.widget.ProgressBar").wait_gone(timeout=600), "下载失败，检查网络是否正常！"
+        d(description="更多").click(timeout=3)
+        d(text="收藏").click(timeout=3)
+        jumpToBack(d)
+        isAlbumMode(d)
+        print(" -- 收藏成功....")
+        return True
+    elif elem_type == "photoWord" or elem_type == "videoWord" or elem_type == "photoWordList":
+        # 点击进入阅读模式,在进入详情模式中复制文本
+        albumJumpReadingJumpDetails(d, elem)
+        word = d(resourceId=Element["详情文字"]).get_text(timeout=5)
+
+        d(text=u"评论").set_text(word, timeout=1)
+        d(text=u"发送").exists(timeout=1)
+        d(text=u"发送").click_exists(timeout=1)
+
+        d(resourceId=Element["详情文字"]).long_click(duration=0.6)
+        d(text="收藏").click(timeout=1)
+
+        # 返回到阅读模式中保存图片,再从阅读模式返回相册列表
+        jumpToBack(d)
+        isReadingMode(d)
+        jumpToBack(d)
+        isAlbumMode(d)
+        print(" -- 收藏成功....")
+        return True
+    return False
+
+
 def shoucangChangePrice(d, elem, elem_type):
     """6中类型：empty word photoList video photoWord videoWord photoWordList """
     print(" -- 开始收藏....")
@@ -815,10 +885,12 @@ def main():
     # openDownloadWXXC(d)
     # openUploadWXPYQ(d)
     # uploadImages(d, upload_num=9, word='8888')
-
-
     # print(len(elms))
-    forLoopElms(d, uploadAndDownloadElem)
+    
+    # forLoopElms(d, uploadAndDownloadElem)
+    # forLoopElms(d, shoucangOnly)
+    # forLoopElms(d, shoucangNoChange)
+    forLoopElms(d, shoucangChangePrice)
 
 
 if __name__ == '__main__':
